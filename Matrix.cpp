@@ -7,7 +7,9 @@
 // EFFECTS:  Initializes *mat as a Matrix with the given width and height,
 //           with all elements initialized to 0.
 void Matrix_init(Matrix* mat, int width, int height) {
-  assert(false); // TODO Replace with your implementation!
+  assert(width > 0 && height > 0);  //checks width and height are positive numbers
+  mat->height = height;   //can't access member variables directly
+  mat->width = width;
 }
 
 // REQUIRES: mat points to a valid Matrix
@@ -19,19 +21,18 @@ void Matrix_init(Matrix* mat, int width, int height) {
 //           by a newline. This means there will be an "extra" space at
 //           the end of each line.
 void Matrix_print(const Matrix* mat, std::ostream& os) {
-  assert(false); // TODO Replace with your implementation!
 }
 
 // REQUIRES: mat points to a valid Matrix
 // EFFECTS:  Returns the width of the Matrix.
 int Matrix_width(const Matrix* mat) {
-  assert(false); // TODO Replace with your implementation!
+  return mat->width;
 }
 
 // REQUIRES: mat points to a valid Matrix
 // EFFECTS:  Returns the height of the Matrix.
 int Matrix_height(const Matrix* mat) {
-  assert(false); // TODO Replace with your implementation!
+  return mat->height;
 }
 
 // REQUIRES: mat points to a valid Matrix
@@ -43,7 +44,11 @@ int Matrix_height(const Matrix* mat) {
 // EFFECTS:  Returns a pointer to the element in the Matrix
 //           at the given row and column.
 int* Matrix_at(Matrix* mat, int row, int column) {
-  assert(false); // TODO Replace with your implementation!
+  assert(row >= 0 && row < Matrix_height(mat));   //check desired row is positive and within bounds of matrix
+  assert(column >= 0 && column < Matrix_width(mat));    //check desired columns is positive and within bounds of matrix
+  int index = (row * Matrix_width(mat)) + column;   //formula for 1d vector index
+  int *ptr_at = &(mat->data.at(index));
+  return ptr_at;
 }
 
 // REQUIRES: mat points to a valid Matrix
@@ -53,14 +58,23 @@ int* Matrix_at(Matrix* mat, int row, int column) {
 // EFFECTS:  Returns a pointer-to-const to the element in
 //           the Matrix at the given row and column.
 const int* Matrix_at(const Matrix* mat, int row, int column) {
-  assert(false); // TODO Replace with your implementation!
+  ssert(row >= 0 && row < Matrix_height(mat));   //check desired row is positive and within bounds of matrix
+  assert(column >= 0 && column < Matrix_width(mat));    //check desired columns is positive and within bounds of matrix
+  int index = (row * Matrix_width(mat)) + column;   //formula for 1d vector index
+  const int *ptr_at_const = &(mat->data.at(index));   //pointer to const
+  return ptr_at_const;
 }
 
 // REQUIRES: mat points to a valid Matrix
 // MODIFIES: *mat
 // EFFECTS:  Sets each element of the Matrix to the given value.
 void Matrix_fill(Matrix* mat, int value) {
-  assert(false); // TODO Replace with your implementation!
+  std::vector<int> vec;
+  for(size_t r = 0; r < Matrix_height(mat); ++r) {    //iterate through rows
+    for(size_t c = 0; c < Matrox_width(mat); ++c) {   //iterate through columns
+      Matrix_at(&mat, r, c) = value;
+    }
+  }
 }
 
 // REQUIRES: mat points to a valid Matrix
@@ -69,7 +83,22 @@ void Matrix_fill(Matrix* mat, int value) {
 //           the given value. These are all elements in the first/last
 //           row or the first/last column.
 void Matrix_fill_border(Matrix* mat, int value) {
-  assert(false); // TODO Replace with your implementation!
+  int topRow = 0;
+  int leftColumn = 0;
+  int bottomRow = Matrix_init(mat);
+  int rightColumn = Matrix_width(mat);
+  for(size_t r = 0; r < bottomRow; ++r) {
+    int *ptrLCol = Matrix_at(&mat, r, leftColumn);
+    *ptrLCol = value;
+    int *ptrRCol = Matrix_at(&mat, r, rightColumn);
+    *ptrRCol = value;
+  }
+  for(size_t c = 0; c < rightColumn; ++c) {
+    int *ptrTRow = Matrix_at(&mat, c, topRow);
+    *ptrTRow = value;
+    int *ptrBRow = Matrix_at(&mat, c, bottomRow);
+    *ptrBRow = value;
+  }
 }
 
 // REQUIRES: mat points to a valid Matrix
