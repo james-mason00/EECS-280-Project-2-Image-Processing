@@ -82,11 +82,9 @@ const int* Matrix_at(const Matrix* mat, int row, int column) {
 // MODIFIES: *mat
 // EFFECTS:  Sets each element of the Matrix to the given value.
 void Matrix_fill(Matrix* mat, int value) {
-  std::vector<int> vec;
-  for(int r = 0; r < Matrix_height(mat) - 1; ++r) {    //iterate through rows
-    for(int c = 0; c < Matrix_width(mat) - 1; ++c) {   //iterate through columns
-      int * ptrElement = Matrix_at(mat, r, c);
-      *ptrElement = value;
+  for(int r = 0; r < Matrix_height(mat); ++r) {    //iterate through rows
+    for(int c = 0; c < Matrix_width(mat); ++c) {   //iterate through columns
+      *Matrix_at(mat, r, c) = value;
     }
   }
 }
@@ -101,17 +99,13 @@ void Matrix_fill_border(Matrix* mat, int value) {
   int leftColumn = 0;
   int bottomRow = Matrix_height(mat) - 1;
   int rightColumn = Matrix_width(mat) - 1;
-  for(int r = 0; r < bottomRow; ++r) {
-    int *ptrLCol = Matrix_at(mat, r, leftColumn);  //fill left column
-    *ptrLCol = value;
-    int *ptrRCol = Matrix_at(mat, r, rightColumn);  //fill right column
-    *ptrRCol = value;
+  for(int r = 0; r <= bottomRow; ++r) {
+    *Matrix_at(mat, r, leftColumn) = value;  //fill left column
+    *Matrix_at(mat, r, rightColumn) = value;  //fill right column
   }
-  for(int c = 0; c < rightColumn; ++c) {
-    int *ptrTRow = Matrix_at(mat, c, topRow);    //fill top row
-    *ptrTRow = value;
-    int *ptrBRow = Matrix_at(mat, c, bottomRow);   //fill bottom row
-    *ptrBRow = value;
+  for(int c = 0; c <= rightColumn; ++c) {
+    *Matrix_at(mat, topRow, c) = value;    //fill top row
+    *Matrix_at(mat, bottomRow, c) = value;   //fill bottom row
   }
 }
 
