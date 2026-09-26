@@ -7,7 +7,12 @@
 // EFFECTS:  Initializes the Image with the given width and height, with
 //           all pixels initialized to RGB values of 0.
 void Image_init(Image* img, int width, int height) {
-  assert(false); // TODO Replace with your implementation!
+  assert(width > 0 && height > 0);  //check width and height greater than 0
+  Matrix_init(img->red_channel, width, height);
+  Matrix_init(img->green_channel, width, height);
+  Matrix_init(img->blue_channel, width, height);
+  img->width = width;
+  img->height = height;
 }
 
 // REQUIRES: img points to an Image
@@ -18,7 +23,21 @@ void Image_init(Image* img, int width, int height) {
 //           from the given input stream.
 // NOTE:     See the project spec for a discussion of PPM format.
 void Image_init(Image* img, std::istream& is) {
-  assert(false); // TODO Replace with your implementation!
+  int width;
+  int height;
+  int max_intensity;
+  is >> width;    //reads until whitespace encountered
+  is >> height;
+  is >> max_intensity;
+  Matrix_init(img->red_channel, img->width, img->height);
+  Matrix_init(img->green_channel, img->width, img->height);
+  Matrix_init(img->blue_channel, img->width, img->height);
+  //red_channel rows 0 and multiples of 3
+  for(int red = 0; red < Matrix_width(&img); ++red) {
+    
+  }
+  //green_channel rows 1, 4, 7, 10, 13, ...
+  //blue_channel rows 2, 5, 8, 11, 14, ...
 }
 
 // REQUIRES: img points to a valid Image
