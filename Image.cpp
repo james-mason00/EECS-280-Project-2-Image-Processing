@@ -8,9 +8,11 @@
 //           all pixels initialized to RGB values of 0.
 void Image_init(Image* img, int width, int height) {
   assert(width > 0 && height > 0);  //check width and height greater than 0
+
   Matrix_init(img->red_channel, width, height);
   Matrix_init(img->green_channel, width, height);
   Matrix_init(img->blue_channel, width, height);
+
   img->width = width;
   img->height = height;
 }
@@ -23,21 +25,34 @@ void Image_init(Image* img, int width, int height) {
 //           from the given input stream.
 // NOTE:     See the project spec for a discussion of PPM format.
 void Image_init(Image* img, std::istream& is) {
-  int width;
-  int height;
+  is >> img->width;    
+  is >> img->height;    //reads until whitespace encountered
   int max_intensity;
-  is >> width;    //reads until whitespace encountered
-  is >> height;
+  
   is >> max_intensity;
-  Matrix_init(img->red_channel, img->width, img->height);
-  Matrix_init(img->green_channel, img->width, img->height);
-  Matrix_init(img->blue_channel, img->width, img->height);
-  //red_channel rows 0 and multiples of 3
-  for(int red = 0; red < Matrix_width(&img); ++red) {
-    
+  assert(max_intensity == 255);
+
+  int red;
+  int green;    //declare in function scope to be used in loops
+  int blue;
+
+  //initialized rgb channels
+  Matrix_init(&(img->red_channel), img->width, img->height);
+  Matrix_init(&(img->green_channel), img->width, img->height);
+  Matrix_init(&(img->blue_channel), img->width, img->height);
+
+  for(int row = 0; row != img->height; ++row) {
+    for(int col = 0; col != img->width; ++col) {
+      //for each element in image, read in pixel struct values
+      is >> red >> green >> blue;  
+
+      //pack elements into respective rgb channels
+      *Matrix_at(&(img->red_channel), row, col) = red;
+      *Matrix_at(&(img->green_channel), row, col) = green;
+      *Matrix_at(&(img->blue_channel), row, col) = blue;
+    }
   }
-  //green_channel rows 1, 4, 7, 10, 13, ...
-  //blue_channel rows 2, 5, 8, 11, 14, ...
+  
 }
 
 // REQUIRES: img points to a valid Image
@@ -55,19 +70,27 @@ void Image_init(Image* img, std::istream& is) {
 //           "extra" space at the end of each line. See the project spec
 //           for an example.
 void Image_print(const Image* img, std::ostream& os) {
-  assert(false); // TODO Replace with your implementation!
+  os << "P3" << "\n";
+  os << img->width << " " << img->height << "\n";
+  os << "255" << "\n";
+  for(int row = 0; row != img->height; ++row) {
+    for(int col = 0; col != img->width; ++col) {
+      os << *Matrix_at(&(img->red_channel), row, col) << " " << *Matrix_at(&(img->green_channel), row, col) << " " << *Matrix_at(&(img->blue_channel), row, col) << " ";
+    }
+    os << "\n";
+  }
 }
 
 // REQUIRES: img points to a valid Image
 // EFFECTS:  Returns the width of the Image.
 int Image_width(const Image* img) {
-  assert(false); // TODO Replace with your implementation!
+  return img->width;
 }
 
 // REQUIRES: img points to a valid Image
 // EFFECTS:  Returns the height of the Image.
 int Image_height(const Image* img) {
-  assert(false); // TODO Replace with your implementation!
+  return img->height;
 }
 
 // REQUIRES: img points to a valid Image
@@ -75,7 +98,17 @@ int Image_height(const Image* img) {
 //           0 <= column && column < Image_width(img)
 // EFFECTS:  Returns the pixel in the Image at the given row and column.
 Pixel Image_get_pixel(const Image* img, int row, int column) {
-  assert(false); // TODO Replace with your implementation!
+  assert(0 <= row && Image_height(img));
+  assert(0 <= column && column < Image_width(img));
+
+  Pixel pix;
+
+  //dereference element pointer and assign its value to pixel struct member variables
+  pix.r = *Matrix_at(&(img->red_channel), row, column);
+  pix.g = *Matrix_at(&(img->green_channel), row, column);
+  pix.b = *Matrix_at(&(img->blue_channel), row, column);
+
+  return pix;   //return pixel struct
 }
 
 // REQUIRES: img points to a valid Image
@@ -85,12 +118,24 @@ Pixel Image_get_pixel(const Image* img, int row, int column) {
 // EFFECTS:  Sets the pixel in the Image at the given row and column
 //           to the given color.
 void Image_set_pixel(Image* img, int row, int column, Pixel color) {
-  assert(false); // TODO Replace with your implementation!
+  assert(0 <= row && row < Image_height(img));
+  assert(0 <= column && column < Image_width(img));
+  
+  //set pixel rgb channels via their respective pointers
+  *Matrix_at(&(img->red_channel), row, column) = color.r;
+  *Matrix_at(&(img->green_channel), row, column) = color.g;
+  *Matrix_at(&(img->blue_channel), row, column) = color.b;
 }
 
 // REQUIRES: img points to a valid Image
 // MODIFIES: *img
 // EFFECTS:  Sets each pixel in the image to the given color.
 void Image_fill(Image* img, Pixel color) {
-  assert(false); // TODO Replace with your implementation!
+  for(int row = 0; row != Image_height(img); ++row) {
+    for(int col = 0; col != Image_width(img); ++col) {
+      
+      //just call Image_set_pixel on each pixel :)
+      Image_set_pixel(img, row, col, color);
+    }
+  }
 }
