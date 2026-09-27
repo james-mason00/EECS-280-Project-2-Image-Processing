@@ -9,9 +9,9 @@
 void Image_init(Image* img, int width, int height) {
   assert(width > 0 && height > 0);  //check width and height greater than 0
 
-  Matrix_init(img->red_channel, width, height);
-  Matrix_init(img->green_channel, width, height);
-  Matrix_init(img->blue_channel, width, height);
+  Matrix_init(&(img->red_channel), width, height);
+  Matrix_init(&(img->green_channel), width, height);
+  Matrix_init(&(img->blue_channel), width, height);
 
   img->width = width;
   img->height = height;
@@ -25,6 +25,10 @@ void Image_init(Image* img, int width, int height) {
 //           from the given input stream.
 // NOTE:     See the project spec for a discussion of PPM format.
 void Image_init(Image* img, std::istream& is) {
+  
+  std::string format;
+  is >> format;   //P3 
+
   is >> img->width;    
   is >> img->height;    //reads until whitespace encountered
   int max_intensity;
