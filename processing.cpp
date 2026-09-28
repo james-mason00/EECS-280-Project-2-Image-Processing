@@ -86,8 +86,22 @@ static int squared_difference(Pixel p1, Pixel p2) {
 //           image is computed and written into it.
 //           See the project spec for details on computing the energy matrix.
 void compute_energy_matrix(const Image* img, Matrix* energy) {
-  assert(false); // TODO Replace with your implementation!
-  assert(squared_difference(Pixel(), Pixel())); // TODO delete me, this is here to make it compile
+  Matrix_init(energy, img->width, img->height);
+  int max_energy = 0;
+  for(int row = 1; row < (img->height - 1); ++row) {
+    for(int col = 1; col < (img->width - 1) ++col) {
+      Pixel N = Image_get_pixel(energy, row + 1, col);
+      Pixel S = Image_get_pixel(energy, row - 1, col);
+      Pixel W = Image_get_pixel(energy, row, col - 1);
+      Pixel E = Image_get_pixel(energy, row, col + 1);
+      int current_energy = squared_difference(N, S) + squared_difference(W, E);
+      *Matrix_at(energy, row, col) = current_energy;
+      if(current_energy > max_energy) {
+        max_energy = current_energy;
+      }
+    }
+  }
+Matrix_fill_border(energy, max_energy);
 }
 
 
@@ -101,7 +115,19 @@ void compute_energy_matrix(const Image* img, Matrix* energy) {
 //           computed and written into it.
 //           See the project spec for details on computing the cost matrix.
 void compute_vertical_cost_matrix(const Matrix* energy, Matrix *cost) {
-  assert(false); // TODO Replace with your implementation!
+  Matrix_init(cost, energy->width, energy->height);
+
+  //fill in first row of cost matrix with each pixel's energy
+  for(int col = 1; col != Matrix_width(cost); ++col) {
+    *Matrix_at(cost, 0, col) = *Matrix_at(energy, 0, col);
+  }
+  
+  //loop through remaining rows, using reccurence relation to compute cost
+  for(int row = 1; row != Matrix_height(cost); ++row) {
+    for(int col = 0; col != Matrix_width(cost); ++col) {
+      *Matrix_at(cost, row, col) = min(*Matrix_at(cost, row -1, col -1), *Matrix_at(cost, row - 1, col), *Matrix_at(cost, row -1, col + 1));
+    }
+  }
 }
 
 
