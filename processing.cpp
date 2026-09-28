@@ -143,7 +143,26 @@ void compute_vertical_cost_matrix(const Matrix* energy, Matrix *cost) {
 //           Note: When implementing the algorithm, compute the seam starting at the
 //           bottom row and work your way up.
 vector<int> find_minimal_vertical_seam(const Matrix* cost) {
-  assert(false); // TODO Replace with your implementation!
+  vector<int> seam;
+
+  //note: matrix_col_of_min_val_in_row accounts for ties already
+  //also note this function is [start, end)
+
+  //find column in bottom row with minimum energy
+  int min_cost_i = Matrix_column_of_min_value_in_row(cost, cost->height - 1, 0, cost->width);
+  seam.insert(seam.begin(), min_cost_i);   //start seam vector
+
+  //work upwards, finding "upstairs neighbor" with lowest cost
+  for(int row = cost->height - 2; row >= 0; --row) {
+    if(min_cost_i == cost->width - 1) {    //consider only directly above, and above left
+      min_cost_i = Matrix_column_of_min_value_in_row(cost, row, min_cost_i - 1, min_cost_i + 1);
+    } else if (min_cost_i - 1 < 0) {    //consider only directly above and above right
+      min_cost_i = Matrix_column_of_min_value_in_row(cost, row, min_cost_i, min_cost_i + 2);
+    } else {    //consider directly above, above left, and above right
+      min_cost_i = Matrix_column_of_min_value_in_row(cost, row, min_cost_i - 1, min_cost_i + 2);
+    }
+    seam.insert(seam.begin(), min_cost_i);
+  }
 }
 
 
