@@ -86,10 +86,10 @@ static int squared_difference(Pixel p1, Pixel p2) {
 //           image is computed and written into it.
 //           See the project spec for details on computing the energy matrix.
 void compute_energy_matrix(const Image* img, Matrix* energy) {
-  Matrix_init(energy, img->width, img->height);
+  Matrix_init(energy, Image_width(img), Image_height(img));
   int max_energy = 0;
-  for(int row = 1; row < (img->height - 1); ++row) {
-    for(int col = 1; col < (img->width - 1); ++col) {
+  for(int row = 1; row < (Image_height(img) - 1); ++row) {
+    for(int col = 1; col < (Image_width(img) - 1); ++col) {
       Pixel N = Image_get_pixel(img, row + 1, col);
       Pixel S = Image_get_pixel(img, row - 1, col);
       Pixel W = Image_get_pixel(img, row, col - 1);
@@ -115,7 +115,7 @@ Matrix_fill_border(energy, max_energy);
 //           computed and written into it.
 //           See the project spec for details on computing the cost matrix.
 void compute_vertical_cost_matrix(const Matrix* energy, Matrix *cost) {
-  Matrix_init(cost, energy->width, energy->height);
+  Matrix_init(cost, Matrix_width(energy), Matrix_height(energy));
 
   //fill in first row of cost matrix with each pixel's energy
   for(int col = 0; col != Matrix_width(cost); ++col) {
@@ -125,15 +125,20 @@ void compute_vertical_cost_matrix(const Matrix* energy, Matrix *cost) {
   //loop through remaining rows, using reccurence relation to compute cost
   for(int row = 1; row != Matrix_height(cost); ++row) {
     //left edge
-    *Matrix_at(cost, row, 0) = *Matrix_at(energy, row, 0) + min(*Matrix_at(cost, row - 1, 0), *Matrix_at(cost, row - 1, 1));
+    *Matrix_at(cost, row, 0) = *Matrix_at(energy, row, 0) 
+    + min(*Matrix_at(cost, row - 1, 0), *Matrix_at(cost, row - 1, 1));
 
     //middle
     for(int col = 1; col != Matrix_width(cost) - 1; ++col) {
-      *Matrix_at(cost, row, col) = *Matrix_at(energy, row, col) + min(*Matrix_at(cost, row -1, col -1), min(*Matrix_at(cost, row - 1, col), *Matrix_at(cost, row - 1, col + 1)));
+      *Matrix_at(cost, row, col) = *Matrix_at(energy, row, col) + 
+      min(*Matrix_at(cost, row -1, col -1), 
+      min(*Matrix_at(cost, row - 1, col), *Matrix_at(cost, row - 1, col + 1)));
+
     }
     //right edge
     int last_col = Matrix_width(cost) - 1;
-    *Matrix_at(cost, row, last_col) = *Matrix_at(energy, row, last_col) + min(*Matrix_at(cost, row - 1, last_col), *Matrix_at(cost, row - 1, last_col - 1));
+    *Matrix_at(cost, row, last_col) = *Matrix_at(energy, row, last_col) 
+    + min(*Matrix_at(cost, row - 1, last_col), *Matrix_at(cost, row - 1, last_col - 1));
   }
 }
 
@@ -156,17 +161,22 @@ vector<int> find_minimal_vertical_seam(const Matrix* cost) {
   //also note this function is [start, end)
 
   //find column in bottom row with minimum energy
-  int min_cost_i = Matrix_column_of_min_value_in_row(cost, cost->height - 1, 0, cost->width);
+  int min_cost_i = Matrix_column_of_min_value_in_row(cost, 
+  Matrix_height(cost)
+  - 1, 0, Matrix_width(cost));
   seam.insert(seam.begin(), min_cost_i);   //start seam vector
 
   //work upwards, finding "upstairs neighbor" with lowest cost
-  for(int row = cost->height - 2; row >= 0; --row) {
-    if(min_cost_i == cost->width - 1) {    //consider only directly above, and above left
-      min_cost_i = Matrix_column_of_min_value_in_row(cost, row, min_cost_i - 1, min_cost_i + 1);
+  for(int row = Matrix_height(cost) - 2; row >= 0; --row) {
+    if(min_cost_i == Matrix_width(cost) - 1) {    //consider only directly above, and above left
+      min_cost_i = Matrix_column_of_min_value_in_row(cost, 
+      row, min_cost_i - 1, min_cost_i + 1);
     } else if (min_cost_i - 1 < 0) {    //consider only directly above and above right
-      min_cost_i = Matrix_column_of_min_value_in_row(cost, row, min_cost_i, min_cost_i + 2);
+      min_cost_i = Matrix_column_of_min_value_in_row(cost, 
+      row, min_cost_i, min_cost_i + 2);
     } else {    //consider directly above, above left, and above right
-      min_cost_i = Matrix_column_of_min_value_in_row(cost, row, min_cost_i - 1, min_cost_i + 2);
+      min_cost_i = Matrix_column_of_min_value_in_row(cost, 
+      row, min_cost_i - 1, min_cost_i + 2);
     }
     seam.insert(seam.begin(), min_cost_i);
   }

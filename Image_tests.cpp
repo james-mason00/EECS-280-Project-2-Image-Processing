@@ -110,4 +110,36 @@ TEST(test_img_fill) {
   }
 }
 
+TEST(test_img_fill_small) {
+  Image img;
+  Image_init(&img, 3, 2);
+  const Pixel pink = {235, 52, 180};
+  Image_fill(&img, pink);
+  for (int row = 0; row < Image_height(&img); ++row) {
+    for (int col = 0; col < Image_width(&img); ++col) {
+      assert(Pixel_equal(pink, Image_get_pixel(&img, row, col)));
+    }
+  }
+}
+
+TEST(test_img_fill_one_row) {
+  Image img;
+  Image_init(&img, 5, 1);
+  const Pixel pink = {235, 52, 180};
+  Image_fill(&img, pink);
+  for (int col = 0; col < Image_width(&img); ++col) {
+    assert(Pixel_equal(pink, Image_get_pixel(&img, 0, col)));
+  }
+}
+
+TEST(test_img_fill_one_col) {
+  Image img;
+  Image_init(&img, 1, 5);
+  const Pixel pink = {235, 52, 180};
+  Image_fill(&img, pink);
+  for (int row = 0; row < Image_height(&img); ++row) {
+    assert(Pixel_equal(pink, Image_get_pixel(&img, row, 0)));
+  }
+}
+
 TEST_MAIN() // Do NOT put a semicolon here
