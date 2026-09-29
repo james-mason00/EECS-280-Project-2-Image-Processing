@@ -49,5 +49,7 @@ int main(int argc, char **argv) {
 
     seam_carve(&img, newWidth, newHeight);
     Image_print(&img, fout);
+    
+    return 0;
 
 }
