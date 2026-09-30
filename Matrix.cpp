@@ -116,9 +116,9 @@ void Matrix_fill_border(Matrix* mat, int value) {
 // REQUIRES: mat points to a valid Matrix
 // EFFECTS:  Returns the value of the maximum element in the Matrix
 int Matrix_max(const Matrix* mat) {
-  int max = 0;
-  for(int r = 0; r < Matrix_height(mat) - 1; ++r) {
-    for(int c = 0; c < Matrix_width(mat) - 1; ++c) {
+  int max = *Matrix_at(mat, 0, 0);
+  for(int r = 0; r != Matrix_height(mat); ++r) {
+    for(int c = 0; c != Matrix_width(mat); ++c) {
       const int *elementPtr = Matrix_at(mat, r, c);
       if(*elementPtr > max) {
         max = *elementPtr;

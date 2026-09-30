@@ -168,7 +168,8 @@ vector<int> find_minimal_vertical_seam(const Matrix* cost) {
 
   //work upwards, finding "upstairs neighbor" with lowest cost
   for(int row = Matrix_height(cost) - 2; row >= 0; --row) {
-    if(min_cost_i == Matrix_width(cost) - 1) {    //consider only directly above, and above left
+    //consider only directly above, and above left
+    if(min_cost_i == Matrix_width(cost) - 1) {
       min_cost_i = Matrix_column_of_min_value_in_row(cost, 
       row, min_cost_i - 1, min_cost_i + 1);
     } else if (min_cost_i - 1 < 0) {    //consider only directly above and above right

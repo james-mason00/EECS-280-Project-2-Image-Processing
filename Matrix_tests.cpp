@@ -104,15 +104,15 @@ TEST(test_matrix_max_lowerR) {
   assert(Matrix_max(&mat) == max);
 }
 
-// TEST(test_matrix_max_lowerL) {   commented out bc i lost points on autograder for this
-//   Matrix mat;
-//   Matrix_init(&mat, 250, 250);
-//   const int min = 0;
-//   const int max = 1;
-//   Matrix_fill(&mat, min);
-//   *Matrix_at(&mat, 249, 0) = max;
-//   assert(Matrix_max(&mat) == max);
-// }
+TEST(test_matrix_max_lowerL) {   
+  Matrix mat;
+  Matrix_init(&mat, 250, 250);
+  const int min = 0;
+  const int max = 1;
+  Matrix_fill(&mat, min);
+  *Matrix_at(&mat, 249, 0) = max;
+  assert(Matrix_max(&mat) == max);
+}
 
 TEST(test_col_of_min_value_in_row) {
   Matrix mat;
@@ -120,6 +120,14 @@ TEST(test_col_of_min_value_in_row) {
   Matrix_fill(&mat, 30);
   *Matrix_at(&mat, 5, 5) = 25;
   assert(Matrix_column_of_min_value_in_row(&mat, 5, 1, 10) == 5);
+}
+
+TEST(test_matrix_max_neg) {
+  Matrix mat;
+  Matrix_init(&mat, 5, 5);
+  Matrix_fill(&mat, -10);
+  *Matrix_at(&mat, 2, 2) = -5;
+  assert(Matrix_max(&mat) == -5);
 }
 
 TEST(test_col_of_min_value_in_row_left_bound) {
@@ -172,4 +180,54 @@ TEST(test_matrix_min_val_in_row) {
   *Matrix_at(&mat, 10, 10) = 0;
   assert(Matrix_min_value_in_row(&mat, 10, 5, 15) == 0);
 }
+
+TEST(test_matrix_fill_border_2) {
+  Matrix mat;
+  Matrix_init(&mat, 100, 100);
+  Matrix_fill_border(&mat, 50);
+
+  //loop through left border
+  for(int row = 0; row != Matrix_height(&mat); ++row) {
+    assert(*Matrix_at(&mat, row, 0) == 50);
+  }
+
+  //loop through right border
+  for(int row = 0; row != Matrix_height(&mat); ++row) {
+    assert(*Matrix_at(&mat, row, Matrix_width(&mat) - 1) == 50);
+  }
+
+  //loop through top border
+  for(int col = 0; col != Matrix_width(&mat); ++col) {
+    assert(*Matrix_at(&mat, 0, col) == 50);
+  }
+
+  //loop through bottom border
+  for(int col = 0; col != Matrix_width(&mat); ++col) {
+    assert(*Matrix_at(&mat, Matrix_height(&mat) - 1, col) == 50);
+  }
+
+  //check interior is the same
+  assert(*Matrix_at(&mat, 50, 50) == 0);
+}
+
+TEST(test_matrix_min_value_in_row_tie) {
+  Matrix mat;
+  Matrix_init(&mat, 100, 100);
+  Matrix_fill(&mat, 50);
+  *Matrix_at(&mat, 10, 5) = 0;
+  *Matrix_at(&mat, 10, 15) = 0;
+  assert(Matrix_min_value_in_row(&mat, 10, 5, 15) == 0);
+}
+
+TEST(test_matrix_min_value_in_row_outside_region) {
+  Matrix mat;
+  Matrix_init(&mat, 100, 100);
+  Matrix_fill(&mat, 50);
+  *Matrix_at(&mat, 10, 4) = -100;
+  *Matrix_at(&mat, 10, 16) = -100;
+  *Matrix_at(&mat, 10, 10) = 5;
+  assert(Matrix_min_value_in_row(&mat, 10, 5, 15) == 5);
+}
+
+
 TEST_MAIN() // Do NOT put a semicolon here
